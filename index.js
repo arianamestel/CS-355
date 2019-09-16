@@ -48,13 +48,29 @@ app.post('/contact-us', function(req, res) {
     		res.render('contact/contactFailure');
     	}
     	else {
-      		res.render('/contact/contactSuccess');
+      		res.render('contact/contactSuccess');
     	}
   	});
 });
 
 app.get("/navigator", function(req, res) {
 	res.render("browser/navigator");
+});
+
+app.get("/window", function(req, res) {
+  res.render("browser/window");
+});
+
+app.get("/screen", function(req, res) {
+  res.render("browser/screen");
+});
+
+app.get("/location", function(req, res) {
+  res.render("browser/location");
+});
+
+app.get("/geolocation", function(req, res) {
+  res.render("browser/geolocation");
 });
 
 app.listen(port, function() {
