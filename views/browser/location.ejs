@@ -1,11 +1,29 @@
 <% include ../header.ejs %>
 
-	<div class="container">
-		<h1>Location: </h1>
-		<p id="href">href: </p>
-		<p id="hostname">Hostname: </p>
-		<p id="pathname">PathName: </p>
-		<p id="protocol">Protocol: </p>
+	<div class="row">
+		<div class="col-3"></div>
+		<div class="col-6">
+			<div class="card">
+				  <ul class="list-group list-group-flush">
+				    <div class="card-header">
+				    	<h2 class="text-center">Location:</h2>
+				    </div>
+					<li class="list-group-item" id="href">
+						<strong>href:</strong> 
+					</li>
+					<li class="list-group-item" id="hostname">
+						<strong>Hostname:</strong> 
+					</li>
+					<li class="list-group-item" id="pathname">
+						<strong>PathName:</strong> 
+					</li>
+					<li class="list-group-item" id="protocol">
+						<strong>Protocol:</strong> 
+					</li>
+				  </ul>
+			</div>
+		</div>
+		<div class="col-3"></div>
 	</div>
 
 <% include ../footer.ejs %>

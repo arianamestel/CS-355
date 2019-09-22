@@ -1,13 +1,32 @@
 <% include ../header.ejs %>
 
-	<div class="container">
-		<h1>Screen: </h1>
-		<p id="width">Width: </p>
-		<p id="height">Height: </p>
-		<p id="availWidth">Available Width: </p>
-		<p id="availHeight">Available Height: </p>
-		<p id="colorDepth">Color Depth: </p>
-		<p id="pixelDepth">Pixel Depth: </p>
+	<div class="row">
+		<div class="col-3"></div>
+		<div class="col-6">
+			<div class="card">
+				  <ul class="list-group list-group-flush">
+				    <div class="card-header">
+				    	<h2 class="text-center">Screen:</h2>
+				    </div>
+					<li class="list-group-item" id="width">
+						<strong>Width:</strong> 
+					</li>
+					<li class="list-group-item" id="height">
+						<strong>Height:</strong> 
+					</li>
+					<li class="list-group-item" id="availWidth">
+						<strong>Available Height:</strong> 
+					</li>
+					<li class="list-group-item" id="colorDepth">
+						<strong>Color Depth:</strong> 
+					</li>
+					<li class="list-group-item" id="pixelDepth">
+						<strong>Pixel Depth:</strong> 
+					</li>
+				  </ul>
+			</div>
+		</div>
+		<div class="col-3"></div>
 	</div>
 
 <% include ../footer.ejs %>

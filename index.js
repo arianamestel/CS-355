@@ -26,31 +26,12 @@ app.get('/contact-us', function(req, res) {
 	res.render("contact/contactUs");
 });
 
-app.post('/contact-us', function(req, res) {
-	var transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true, // true for 465, false for other ports
-        auth: {
-            user: 'amtester101@gmail.com', // generated ethereal user
-            pass: 'Window123' // generated ethereal password
-        }
-    });
-	var mailOpts = {
-	    from: req.body.name + ' &lt;' + req.body.email + '&gt;',
-	    to: 'amtester101@gmail.com',
-	    subject: 'New comment',
-	    text: `${req.body.name} (${req.body.email}) says: ${req.body.comment}`
-  	};
-  	transporter.sendMail(mailOpts, function (error, response) {
-    	if (error) {
-    		console.log(error);
-    		res.render('contact/contactFailure');
-    	}
-    	else {
-      		res.render('contact/contactSuccess');
-    	}
-  	});
+app.get('/contact-success', function(req, res) {
+  res.render("contact/contactSuccess");
+});
+
+app.get("/browser", function(req, res) {
+  res.render("browser/browser");
 });
 
 app.get("/navigator", function(req, res) {

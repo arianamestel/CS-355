@@ -1,13 +1,35 @@
 <% include ../header.ejs %>
 
-	<div class="container">
-		<h1>Navigator:</h1>
-		<p id="appName">AppName: </p>
-		<p id="product">Product: </p>
-		<p id="appVersion">AppVersion: </p>
-		<p id="userAgent">UserAgent: </p>
-		<p id="platform">Platform: </p>
-		<p id="language">Language: </p>
+	<div class="row">
+		<div class="col-3"></div>
+		<div class="col-6">
+			<div class="card">
+				  <ul class="list-group list-group-flush">
+				    <div class="card-header">
+				    	<h2 class="text-center">Navigator:</h2>
+				    </div>
+					<li class="list-group-item" id="appName">
+						<strong>AppName:</strong> 
+					</li>
+					<li class="list-group-item" id="product">
+						<strong>Product:</strong> 
+					</li>
+					<li class="list-group-item" id="appVersion">
+						<strong>AppVersion:</strong> 
+					</li>
+					<li class="list-group-item" id="userAgent">
+						<strong>UserAgent:</strong> 
+					</li>
+					<li class="list-group-item" id="platform">
+						<strong>Platform:</strong> 
+					</li>
+					<li class="list-group-item" id="language">
+						<strong>Language:</strong> 
+					</li>
+				  </ul>
+			</div>
+		</div>
+		<div class="col-3"></div>
 	</div>
 
 <% include ../footer.ejs %>

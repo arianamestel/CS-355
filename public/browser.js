@@ -23,6 +23,10 @@ $(document).ready(() => {
 		setTimeout(function() {
 			$("#innerHeight").append(" " + window.innerHeight);
 			$("#innerWidth").append(" " + window.innerWidth);
+			$(window).on("resize", function() {
+				$("#innerHeight").text("Inner Height: " + window.innerHeight);
+				$("#innerWidth").text("Inner Width: " + window.innerWidth);
+			});
 		});
 	}
 	else if (window.location.pathname == "/location") {
