@@ -40,9 +40,11 @@ $(document).ready(() => {
 	else if (window.location.pathname == "/geolocation") {
 		setTimeout(function() {
 			var lat = navigator.geolocation.getCurrentPosition(function(position) {
+				$("#spinner1").remove();
 				 $("#latitude").append(" " + position.coords.latitude);
 			});
 			var lng = navigator.geolocation.getCurrentPosition(function(position) {
+				$("#spinner2").remove();
 				$("#longitude").append(" " + position.coords.longitude);
 			});	
 		});
