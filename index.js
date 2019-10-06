@@ -54,6 +54,18 @@ app.get("/geolocation", function(req, res) {
   res.render("browser/geolocation");
 });
 
+app.get("/from-file", function(req, res) {
+  res.render("search/fromFile");
+});
+
+app.get("/google-api", function(req, res) {
+  res.render("search/googleApi");
+});
+
+app.get("/my-search-engine", function(req, res) {
+  res.render("search/mySearchEngine");
+});
+
 app.listen(port, function() {
     console.log('Our app is running on http://localhost:' + port);
 });

@@ -1,8 +1,9 @@
-<% include ../header.ejs %>
+<% include ../partials/header.ejs %>
+
 	<h1 class="text-center">Contact Us!</h1>
 	<div class="row justify-content-md-center mt-3">
 		<div class="card col-md-6 mb-3 border-secondary card-header rounded">
-			<form action="mailto:amtester101@gmail.com?Subject=CS355-Comment" method="post" enctype="text/plain">
+			<form enctype="text/plain">
 				<div class="form-group">
 			    	<label for="name">Full Name</label>
 			    	<input type="text" class="form-control" id="name" name="name" placeholder="Enter full name">
@@ -21,4 +22,17 @@
 	</div>
 
 
-<% include ../footer.ejs %>
+<% include ../partials/footer.ejs %>
+
+<!-- javascript -->
+<script>
+	var btn = $("#contactUsSubmit");
+	btn.on("click", function() {
+		if ($("#name").val() && $("#email").val() && $("#comment").val()) {
+			$(location).attr("href", `mailto:amtester101@gmail.com?Subject=CS355-Comment&body=name=${$("#name").val()}%0D%0Aemail=${$("#email").val()}%0D%0Acomment=${$("#comment").val()}`);
+			window.setTimeout(function () { 
+				location.pathname="/contact-success";
+			}, 0); 
+		}
+	});
+</script>
