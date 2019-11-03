@@ -1,0 +1,13 @@
+.cabin {
+	font-family: 'Anton', sans-serif;
+	font-weight: 700;
+	font-size: 1.5em;
+}
+
+.input-error {
+	border: solid 1.5px red;
+}
+
+.input-error::placeholder {
+	color: red;
+}
