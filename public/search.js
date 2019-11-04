@@ -1,7 +1,6 @@
 function printItems(results, newItems, startIndex, allItems) {
 	for (var i = 0; i < newItems.length; i++) {
 		var u = newItems[i].link || newItems[i].url;
-		// debugger
 		var d = newItems[i].snippet || newItems[i].description;
 		var div = $("<div></div>");
 		div.addClass("form-check bg-light");
@@ -11,7 +10,7 @@ function printItems(results, newItems, startIndex, allItems) {
 		div.append(container);
 		container.append(`<input type="checkbox" class='myCheckbox form-check-input' value=${startIndex++} id='input${startIndex}' />`);
 		container.append(`<label class='title form-check-label' for='input${startIndex}'><strong>${newItems[i].title}</strong></label>`);
-		container.append(`<p><a class='link' href=${u}>${u}</a></p>`);
+		container.append(`<p><a class='link' href='${u}'>${u}</a></p>`);
 		container.append(`<p class='snippet'>${d}</p>`);
 		container.append("<br>");
 	}
@@ -171,7 +170,7 @@ function printResultsInModal(checked) {
 		container.addClass("container mb-3 pt-3 text-break");
 		div.append(container);
 		container.append(`<p><strong>${checked[i].title}</strong></p>`);
-		container.append(`<a href=$checked[i].link}>${checked[i].link || checked[i].url}</a>`);
+		container.append(`<a href='${checked[i].link}'>${checked[i].link || checked[i].url}</a>`);
 		container.append(`<p>${checked[i].snippet || checked[i].description}</p>`);
 		container.append("<br>");
 	}
