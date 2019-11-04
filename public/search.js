@@ -70,7 +70,7 @@ function downloadCSVListener(downloadCSV, checked) {
 			});
 			exportCSVFile(checkedFormatted);
 		} else {
-			if (!checked)
+			if (!checked.length)
 				alert("You must select results to save before downloading.");
 			else
 				fileInputError();
@@ -94,8 +94,7 @@ function downloadJSONListener(downloadJSON, checked) {
 	        		description: d	
 	        	});
 			});
-			var fileTitle = document.getElementById("exportFileName").value;
-	    	var exportedFilenmae = fileTitle + '.json' || 'export.json';
+	    	var exportedFilenmae = fileTitle.value + '.json' || 'export.json';
 		    var blob = new Blob([JSON.stringify({ "Results": checkedFormatted })], { type: 'application/json' });
 		    if (navigator.msSaveBlob) { // IE 10+
 		        navigator.msSaveBlob(blob, exportedFilenmae);
