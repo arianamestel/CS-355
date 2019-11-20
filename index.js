@@ -65,32 +65,13 @@ app.get("/google-api", function(req, res) {
   res.render("search/googleApi");
 });
 
-
-// // saved search results: 
-// var saved = [];
-
-// app.get("/saved", function(req, res) {
-//   res.render("search/savedResults", {saved: saved});
-// });
-
-// app.post("/saved", function(req, res) {
-//   if (req.body.data) {
-//     for (var i = 0; i < req.body.data.length; i++) {
-//       var result = {
-//         title: req.body.data[i].title,
-//         snippet: req.body.data[i].snippet,
-//         link: req.body.data[i].link,
-//       };
-//       if (saved.filter((e) => (e.title == result.title)).length > 0) continue;
-//       else saved.push(result);
-//     }
-//     res.redirect("/saved");
-//   }
-// });
-
 app.get("/my-search-engine", function(req, res) {
   res.render("search/mySearchEngine");
 });
+
+app.get("/index-url", function(req, res) {
+  res.render("admin/adminIndexer");
+})
 
 app.listen(port, function() {
     console.log('Our app is running on http://localhost:' + port);
