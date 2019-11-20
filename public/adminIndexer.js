@@ -19,10 +19,12 @@ $(document).ready(function() {
 
 function indexUrl(indexInput) {
 	if (validURL(indexInput.value)) {
-		$("#indexerResults").text("Successfully indexed.");
+		$("#indexerSuccess").removeClass("invisible");
+		$("#indexerInvalid").addClass("invisible");
 	}
 	else {
-		$("#indexerResults").text("Not a valid URL. Try again.");
+		$("#indexerSuccess").addClass("invisible");
+		$("#indexerInvalid").removeClass("invisible");
 	}
 }
 
