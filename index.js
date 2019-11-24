@@ -1,6 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
+const axios = require('axios');
+const cheerio = require('cheerio');
 var mysql = require('mysql');
 
 
@@ -72,6 +74,45 @@ app.get("/my-search-engine", function(req, res) {
 app.get("/index-url", function(req, res) {
   res.render("admin/adminIndexer");
 });
+
+app.post("/index-url",  function(req, res) {
+  var url = req.body.url;
+  axios.get(url)
+    .then(response => {
+      var words = getData(response.data);
+      var links = getLinks(response.data);
+      
+      // save words associated with url HERE
+      console.log(words);
+
+      // take each link and index it HERE
+      console.log(links);
+
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  // res.redirect("/index-url");
+});
+
+function getData(html) {
+  data = [];
+  var $ = cheerio.load(html);
+  var words = $('body').text().split(/\s+/);
+  return words;
+}
+
+function getLinks(html) {
+  data = [];
+  var $ = cheerio.load(html);
+  var a = $("a");
+  var links = [];
+  $(a).each(function(i, link) {
+    links.push($(link).attr('href'));
+  });
+  return links;
+}
+
 
 var mysqlConnection = mysql.createConnection({
   host: "149.4.211.180",

@@ -19,6 +19,13 @@ $(document).ready(function() {
 
 function indexUrl(indexInput) {
 	if (validURL(indexInput.value)) {
+		$.post('/index-url', 
+		{
+			"url": indexInput.value
+		},
+		function(data) {
+			//
+		});
 		$("#indexerSuccess").removeClass("invisible");
 		$("#indexerInvalid").addClass("invisible");
 	}
