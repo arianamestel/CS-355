@@ -71,7 +71,7 @@ app.get("/my-search-engine", function(req, res) {
 
 app.get("/index-url", function(req, res) {
   res.render("admin/adminIndexer");
-})
+});
 
 var mysqlConnection = mysql.createConnection({
   host: "149.4.211.180",
@@ -79,16 +79,16 @@ var mysqlConnection = mysql.createConnection({
   password: "23556699",
   database: "sajo6699",
   multipleStatements: true
-})
+});
 
 mysqlConnection.connect((err)=>{
   if(!err){
-    console.log("Connected to the database!")
+    console.log("Connected to the database!");
   }
   else{
-    console.log("connection to database Failed :(")
+    console.log("connection to database Failed :(");
   }
-})
+});
 
 
 app.listen(port, function() {
