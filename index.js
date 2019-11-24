@@ -77,40 +77,86 @@ app.get("/index-url", function(req, res) {
 
 app.post("/index-url",  function(req, res) {
   var url = req.body.url;
+  var links = indexMainURL(url);  
+});
+
+
+function indexMainURL(url) {
+  // this function gets all words and all links
   axios.get(url)
     .then(response => {
-      var words = getData(response.data);
-      var links = getLinks(response.data);
-      
-      // save words associated with url HERE
-      console.log(words);
+      var $ = cheerio.load(response.data);
+      var words = getWords(response.data);
+      getLinks(response.data); 
+      // get urls info
+      var linkInfo = {
+        "title": $("title").text(),
+        "url": url,
+        "description": $('meta[name="description"]').attr('content'),
+        "lastModified": null, // get last modified (it in headers somewhere)
+        "lastIndexed": null, // get the data of last time it was indexed
+        "timeToIndex": null // record the amount of time it took to index
+      };
+      // save urls info and the words associated with it HERE
+      // console.log(linkInfo);
 
-      // take each link and index it HERE
-      console.log(links);
-
+      // console.log(words);
     })
     .catch(error => {
       console.log(error);
     });
-  // res.redirect("/index-url");
-});
+}
 
-function getData(html) {
-  data = [];
+function getWords(html) {
   var $ = cheerio.load(html);
   var words = $('body').text().split(/\s+/);
   return words;
 }
 
 function getLinks(html) {
-  data = [];
+  // this function gets links from the url
   var $ = cheerio.load(html);
   var a = $("a");
   var links = [];
   $(a).each(function(i, link) {
-    links.push($(link).attr('href'));
+    // push the link into the link array and then index that link
+    if (validURL($(link).attr('href'))) {
+      links.push(indexLink($(link).attr('href')));
+    }
   });
   return links;
+}
+
+function indexLink(link) {
+  // this function only gets the words from a link
+  axios.get(link)
+    .then(response => {
+      var $ = cheerio.load(response.data);
+      // get words from link
+      var words = getWords(response.data);
+      // get links info
+      var linkInfo = {
+        "title": $("title").text(),
+        "url": link,
+        "description": $('meta[name="description"]').attr('content'),
+        "lastModified": null, // get last modified
+        "lastIndexed": null, // get the data of last time it was indexed
+        "timeToIndex": null // record the amount of time it took to index
+      };
+
+      // save the links words and its info HERE
+      // console.log(linkInfo);
+      return linkInfo;
+
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+function validURL(str) {
+  var pattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+  return !!pattern.test(str);
 }
 
 
