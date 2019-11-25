@@ -98,8 +98,9 @@ function indexMainURL(url) {
         "timeToIndex": null // record the amount of time it took to index
       };
       // save urls info and the words associated with it HERE
-      // console.log(linkInfo);
+      // saveToDB(linkInfo, words)
 
+      // console.log(linkInfo);
       // console.log(words);
     })
     .catch(error => {
@@ -145,6 +146,8 @@ function indexLink(link) {
       };
 
       // save the links words and its info HERE
+      // saveToDB(linkInfo, words)
+
       // console.log(linkInfo);
       return linkInfo;
 
