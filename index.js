@@ -72,7 +72,11 @@ app.get("/my-search-engine", function(req, res) {
 });
 
 app.get("/index-url", function(req, res) {
-  res.render("admin/adminIndexer");
+  res.render("admin/indexer");
+});
+
+app.get("/history-stats", function(req, res) {
+  res.render("admin/history-stats");
 });
 
 app.post("/index-url",  function(req, res) {
@@ -93,7 +97,7 @@ function indexMainURL(url) {
         "title": $("title").text(),
         "url": url,
         "description": $('meta[name="description"]').attr('content'),
-        "lastModified": null, // get last modified (it in headers somewhere)
+        "lastModified": $('meta[name="last-modifed"]').attr('content'), // get last modified (it in headers somewhere)
         "lastIndexed": null, // get the data of last time it was indexed
         "timeToIndex": null // record the amount of time it took to index
       };
@@ -101,7 +105,6 @@ function indexMainURL(url) {
       // saveToDB(linkInfo, words)
 
       // console.log(linkInfo);
-      // console.log(words);
     })
     .catch(error => {
       console.log(error);
@@ -111,7 +114,9 @@ function indexMainURL(url) {
 function getWords(html) {
   var $ = cheerio.load(html);
   var words = $('body').text().split(/\s+/);
-  return words;
+  var filteredWords = words.filter(el => (el.length > 0));
+  console.log(filteredWords);
+  return filteredWords;
 }
 
 function getLinks(html) {
