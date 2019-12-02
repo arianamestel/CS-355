@@ -152,8 +152,14 @@ function indexLink(link) {
 
       // save the links words and its info HERE
       // saveToDB(linkInfo, words)
+      mysqlConnection.query("INSERT INTO page (url, title, description, lastModified, lastIndexed, timeToIndex)"
+        +" VALUES ("+ linkInfo.url + ", "+ linkInfo.title + ", "+ linkInfo.description + ", " + linkInfo.lastModified + ", "
+        + linkInfo.lastIndexed + ", " + link.timeToIndex +")", function (err, result){
+          if (err) throw err;
+          console.log("1 record inserted")
+      });
 
-      // console.log(linkInfo);
+      //console.log(linkInfo);
       return linkInfo;
 
     })
