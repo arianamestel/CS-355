@@ -103,8 +103,20 @@ function indexMainURL(url) {
       };
       // save urls info and the words associated with it HERE
       // saveToDB(linkInfo, words)
+      //save to DB linkINfo
+      //The following is to ignore the apostrophes in words. For example "you're" will be interpreted correctly by sql
+      linkInfo.description = linkInfo.description.replace(/'/g,"''");
+      linkInfo.url = linkInfo.url.replace(/'/g,"''");
+      linkInfo.title = linkInfo.title.replace(/'/g,"''");
+         //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
+      mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
+      +linkInfo.description+"', NOW(), NOW(), 12)", 
+      function(err, result){
+        if(err) console.log(err);
+        console.log("1 record added");
+      })
 
-      // console.log(linkInfo);
+       console.log(linkInfo);
     })
     .catch(error => {
       console.log(error);
@@ -149,17 +161,24 @@ function indexLink(link) {
         "lastIndexed": null, // get the data of last time it was indexed
         "timeToIndex": null // record the amount of time it took to index
       };
-
+      
+      //The following is to ignore the apostrophes in words. For example "you're" will be interpreted correctly by sql
+      linkInfo.description = linkInfo.description.replace(/'/g,"''");
+      linkInfo.url = linkInfo.url.replace(/'/g,"''");
+      linkInfo.title = linkInfo.title.replace(/'/g,"''");
+    
       // save the links words and its info HERE
       // saveToDB(linkInfo, words)
-      mysqlConnection.query("INSERT INTO page (url, title, description, lastModified, lastIndexed, timeToIndex)"
-        +" VALUES ("+ linkInfo.url + ", "+ linkInfo.title + ", "+ linkInfo.description + ", " + linkInfo.lastModified + ", "
-        + linkInfo.lastIndexed + ", " + link.timeToIndex +")", function (err, result){
-          if (err) throw err;
-          console.log("1 record inserted")
-      });
+      //THIS IS SAVING TO DB H
+      //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
+      mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
+      +linkInfo.description+"', NOW(), NOW(), 12)", 
+      function(err, result){
+        if(err) console.log(err);
+        console.log("1 record added");
+      })
 
-      //console.log(linkInfo);
+      console.log(linkInfo);
       return linkInfo;
 
     })
