@@ -87,24 +87,29 @@ app.post("/index-url",  function(req, res) {
 
 function indexMainURL(url) {
   // this function gets all words and all links
+  var start = new Date().getTime();
+  var date = new Date();
   axios.get(url)
     .then(response => {
       var $ = cheerio.load(response.data);
       var words = getWords(response.data);
-      getLinks(response.data); 
+      getLinks(response.data);
+      var end = new Date().getTime(); 
+      var seconds = ((end - start) / 1000).toFixed(2);
+
       // get urls info
       var linkInfo = {
         "title": $("title").text(),
         "url": url,
         "description": $('meta[name="description"]').attr('content'),
         "lastModified": $('meta[name="last-modifed"]').attr('content'), // get last modified (it in headers somewhere)
-        "lastIndexed": null, // get the data of last time it was indexed
-        "timeToIndex": null // record the amount of time it took to index
+        "lastIndexed": date, // get the data of last time it was indexed
+        "timeToIndex":  seconds // record the amount of time it took to index
       };
       // save urls info and the words associated with it HERE
       // saveToDB(linkInfo, words)
 
-      // console.log(linkInfo);
+      console.log(linkInfo);
     })
     .catch(error => {
       console.log(error);
@@ -115,7 +120,7 @@ function getWords(html) {
   var $ = cheerio.load(html);
   var words = $('body').text().split(/\s+/);
   var filteredWords = words.filter(el => (el.length > 0));
-  console.log(filteredWords);
+  // console.log(filteredWords);
   return filteredWords;
 }
 
@@ -135,8 +140,12 @@ function getLinks(html) {
 
 function indexLink(link) {
   // this function only gets the words from a link
+  var start = new Date().getTime();
+  var date = new Date();
   axios.get(link)
     .then(response => {
+      var end = new Date().getTime(); 
+      var seconds = ((end - start) / 1000).toFixed(2);
       var $ = cheerio.load(response.data);
       // get words from link
       var words = getWords(response.data);
@@ -145,9 +154,9 @@ function indexLink(link) {
         "title": $("title").text(),
         "url": link,
         "description": $('meta[name="description"]').attr('content'),
-        "lastModified": null, // get last modified
-        "lastIndexed": null, // get the data of last time it was indexed
-        "timeToIndex": null // record the amount of time it took to index
+        "lastModified": $('meta[name="last-modifed"]').attr('content'), // get last modified
+        "lastIndexed": date, // get the data of last time it was indexed
+        "timeToIndex": seconds // record the amount of time it took to index
       };
 
       // save the links words and its info HERE
