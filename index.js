@@ -77,7 +77,16 @@ app.get("/my-search-engine", function(req, res) {
 
 app.post("/my-search-engine", function(req, res) {
   var searchTerm = req.body.searchTerm;
+  var searchDate = new Date();
+  var start = new Date().getTime();
   // function that searches the db for the searchTerm
+  // searchDB(searchTerm)
+
+  var end = new Date().getTime();
+  var searchTime = ((end - start) / 1000).toFixed(2);
+
+  // function that stores search term, number of search results, time that it tookto search, date searched
+  // saveSearchTerm(searchTerm, numResults, timeToSearch, dateSearched)
 });
 
 app.get("/history-stats", function(req, res) {
