@@ -67,12 +67,17 @@ app.get("/google-api", function(req, res) {
   res.render("search/googleApi");
 });
 
+app.get("/index-url", function(req, res) {
+  res.render("admin/indexer");
+});
+
 app.get("/my-search-engine", function(req, res) {
   res.render("search/mySearchEngine");
 });
 
-app.get("/index-url", function(req, res) {
-  res.render("admin/indexer");
+app.post("/my-search-engine", function(req, res) {
+  var searchTerm = req.body.searchTerm;
+  // function that searches the db for the searchTerm
 });
 
 app.get("/history-stats", function(req, res) {
