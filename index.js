@@ -102,27 +102,13 @@ function indexMainURL(url) {
         "lastIndexed": null, // get the data of last time it was indexed
         "timeToIndex": null // record the amount of time it took to index
       }
-      // save urls info and the words associated with it HERE
-      // saveToDB(linkInfo, words)
-      //save to DB linkINfo
-      //The following is to ignore the apostrophes in words. For example "you're" will be interpreted correctly by sql
-      // linkInfo.description = linkInfo.description.replace(/'/g,"''");
-      // linkInfo.url = linkInfo.url.replace(/'/g,"''");
-      // linkInfo.title = linkInfo.title.replace(/'/g,"''");
+
          //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
       
       saveLink(linkInfo)
       
       saveWords(words, linkInfo)
         
-      // saveWords(words, linkInfo);
-      //   mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
-      // +linkInfo.description+"', NOW(), NOW(), 12)", 
-      // function(err, result){
-      //   if(err) console.log(err);
-      //   console.log("1 link/page record added");
-      // })
-      
        console.log(linkInfo);
     })
     .catch(error => {
@@ -235,53 +221,7 @@ function indexLink(link) {
     
       saveLink(linkInfo)
       saveWords(words,linkInfo);
-      // saveWords(words, linkInfo);
-      // saveWords(words);
-      //The following is to ignore the apostrophes in words. For example "you're" will be interpreted correctly by sql
-      // linkInfo.description = linkInfo.description.replace(/'/g,"''");
-      // linkInfo.url = linkInfo.url.replace(/'/g,"''");
-      // linkInfo.title = linkInfo.title.replace(/'/g,"''");
-    
-      // save the links words and its info HERE
-      // saveToDB(linkInfo, words)
-      //THIS IS SAVING TO DB H
-      //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
-      // mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
-      // +linkInfo.description+"', NOW(), NOW(), 12)", 
-      // function(err, result){
-      //   if(err) console.log(err);
-      //   console.log("1 link/page record added");
-      // })
-
-      //save words to db
-      //UNCOMMENT TILL FOR LOOP 
-      //CHECK SINGLE APOSTROPHES 
-      //for(var i=0;i<words.length;i++){
-        //get wordid
-        // var wordId = mysqlConnection.query("SELECT wordId FROM word WHERE wordName='"+words[i]+"');" , 
-        // function(err, result){
-        //   if(err) console.log(err);
-        //   console.log("GOT WORD ID added");
-        // });
-        // mysqlConnection.query("IF EXISTS (SELECT * FROM word WHERE wordName='"+words[i]+"')"
-        // +"BEGIN "+
-        // "IF EXISTS (SELECT * FROM page_word WHERE wordId = '"+wordId+"'"+
-        //   "BEGIN "+
-        //     "UPDATE page_word SET freq = freq+1 WHERE wordId = (SELECT wordId FROM word WHERE wordName='"+words[i]+"')"+
-        //       " AND pageId = '"+pageId+"'"+
-        //   "END "+
-        //   "ELSE INSERT INTO page_word (pageId, wordId, freq) VALUES ('"+pageId+"', '"+
-        //     "(SELECT wordId FROM word WHERE wordName= '"+words[i]+"')"
-        // +"END "+
-        // "ELSE "+
-        //   "INSERT INTO word (wordName) VALUES('"+words[i]+"')"
-        //   +" INSERT INTO page_word (pageId, wordId, freq) VALUES ('"+pageId+"', "+
-        //   " (SELECT wordId FROM word WHERE wordName= '"+words[i]+"')", function(err, result){
-        //     if(err) console.log(err);
-        //     console.log("1 link/page record added");
-        //   })
-       // mysqlConnection.query("INSERT INTO word (wordName) VALUES ("+words+")");
-      //}
+     
       console.log(linkInfo);
       return linkInfo;
 
