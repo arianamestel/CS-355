@@ -91,6 +91,7 @@ function indexMainURL(url) {
     .then(response => {
       var $ = cheerio.load(response.data);
       var words = getWords(response.data);
+      
       getLinks(response.data); 
       // get urls info
       var linkInfo = {
@@ -109,22 +110,65 @@ function indexMainURL(url) {
       // linkInfo.url = linkInfo.url.replace(/'/g,"''");
       // linkInfo.title = linkInfo.title.replace(/'/g,"''");
          //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
+      
       saveLink(linkInfo)
+      saveWords(words, linkInfo);
       //   mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
       // +linkInfo.description+"', NOW(), NOW(), 12)", 
       // function(err, result){
       //   if(err) console.log(err);
       //   console.log("1 link/page record added");
       // })
-      saveWords(words, linkInfo)
+      
        console.log(linkInfo);
-    })
+    })//.then(saveWords(words, linkInfo))
     .catch(error => {
       console.log(error);
     });
 }
 
+function saveWords(wordArray, linkInfo){
+  var pageId ={};
+     mysqlConnection.query(
+     "SELECT pageId FROM page WHERE url = '"+linkInfo.url+"';",
+     function(err, rows, fields){
+       if(err) console.log(err);
+       var count = rows.length;
+         if(count == 1){
+       pageId= rows[0].pageId;
+       console.log("got PAGEID"+ pageId);
+         }
+         else console.log(" CANT GET PAGE ID FOR SOME REASON");
+         console.log(wordArray[1]);
+         for(i=0;i<wordArray.length;i++){
+         
+           wordId = {};
+         mysqlConnection.query("SELECT wordId FROM word WHERE wordName=?" ,wordArray[i],
+         function(err, rows){
 
+         if(err) console.log(err);
+         
+         if(rows){
+         wordId = rows.wordId
+         console.log("GOT WORD ID added" + wordId);
+         }
+         else {console.log("WORD IS NOT IN DB PLEASE ADD")
+           mysqlConnection.query(
+             "INSERT INTO word (wordName) VALUES (?)",wordArray[i],
+             function(err, result){
+               if(err) console.log(err);
+               console.log("1 word record added to word: "+wordArray[i]);
+             }
+           )
+         }
+
+       });
+         }
+         
+     
+     });
+
+}
 function saveLink(linkInfo){
   // linkInfo.description = linkInfo.description.replace(/\/g,"'");
   //     linkInfo.url = linkInfo.url.replace(/\/g,"'");
@@ -134,48 +178,12 @@ function saveLink(linkInfo){
       +linkInfo.description+"', NOW(), NOW(), 12)", 
       function(err, result){
         if(err) console.log(err);
-        console.log("1 link/page record added");
+        console.log("1 link/page record added")
+        
       })
 }
 
-function saveWords(wordArray, linkInfo){
-   var pageId ={};
-      mysqlConnection.query(
-      "SELECT pageId FROM page WHERE url = '"+linkInfo.url+"';",
-      function(err, rows, fields){
-        if(err) console.log(err);
-        var count = rows.length;
-          if(count == 1){
-        pageId= rows[0].pageId;
-        console.log("got PAGEID"+ pageId);
-          }
-          else console.log(" CANT GET PAGE ID FOR SOME REASON")
-          for(var i=0;i<wordArray.length;i++){
-          wordId = {};
-          mysqlConnection.query("SELECT wordId FROM word WHERE wordName='"+wordArray[i]+"');" , 
-          function(err, rows){
 
-          if(err) console.log(err);
-          
-          if(rows){
-          wordId = rows.wordId
-          console.log("GOT WORD ID added" + wordId);
-          }
-          else {console.log("WORD IS NOT IN DB PLEASE ADD")
-            mysqlConnection.query(
-              "INSERT INTO word (wordName) VALUES ('"+wordArray[i]+"')",
-              function(err, result){
-                if(err) console.log(err);
-                console.log("1 word record added to word");
-              }
-            )
-          }
-
-        });
-      }
-      });
-
-}
 
 function getWords(html) {
   var $ = cheerio.load(html);
@@ -216,7 +224,8 @@ function indexLink(link) {
         "timeToIndex": null // record the amount of time it took to index
       }
       saveLink(linkInfo)
-      .then(saveWords(words));
+      saveWords(words, linkInfo);
+      // saveWords(words);
       //The following is to ignore the apostrophes in words. For example "you're" will be interpreted correctly by sql
       // linkInfo.description = linkInfo.description.replace(/'/g,"''");
       // linkInfo.url = linkInfo.url.replace(/'/g,"''");
