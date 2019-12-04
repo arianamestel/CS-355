@@ -67,12 +67,26 @@ app.get("/google-api", function(req, res) {
   res.render("search/googleApi");
 });
 
+app.get("/index-url", function(req, res) {
+  res.render("admin/indexer");
+});
+
 app.get("/my-search-engine", function(req, res) {
   res.render("search/mySearchEngine");
 });
 
-app.get("/index-url", function(req, res) {
-  res.render("admin/indexer");
+app.post("/my-search-engine", function(req, res) {
+  var searchTerm = req.body.searchTerm;
+  var searchDate = new Date();
+  var start = new Date().getTime();
+  // function that searches the db for the searchTerm
+  // searchDB(searchTerm)
+
+  var end = new Date().getTime();
+  var searchTime = ((end - start) / 1000).toFixed(2);
+
+  // function that stores search term, number of search results, time that it tookto search, date searched
+  // saveSearchTerm(searchTerm, numResults, timeToSearch, dateSearched)
 });
 
 app.get("/history-stats", function(req, res) {
@@ -87,20 +101,24 @@ app.post("/index-url",  function(req, res) {
 
 function indexMainURL(url) {
   // this function gets all words and all links
+  var start = new Date().getTime();
+  var date = new Date();
   axios.get(url)
     .then(response => {
       var $ = cheerio.load(response.data);
-      var words = getWords(response.data)
-      
-      getLinks(response.data); 
+      var words = getWords(response.data);
+      getLinks(response.data);
+      var end = new Date().getTime(); 
+      var seconds = ((end - start) / 1000).toFixed(2);
+
       // get urls info
       var linkInfo = {
         "title": $("title").text(),
         "url": url,
         "description": $('meta[name="description"]').attr('content'),
         "lastModified": $('meta[name="last-modifed"]').attr('content'), // get last modified (it in headers somewhere)
-        "lastIndexed": null, // get the data of last time it was indexed
-        "timeToIndex": null // record the amount of time it took to index
+        "lastIndexed": date, // get the data of last time it was indexed
+        "timeToIndex": seconds // record the amount of time it took to index
       }
 
          //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
@@ -182,8 +200,7 @@ function getWords(html) {
   var $ = cheerio.load(html);
   var words = $('body').text().split(/\s+/);
   var filteredWords = words.filter(el => (el.length > 0));
-  console.log(filteredWords);
-  // saveWords(filteredWords);
+  // console.log(filteredWords);
   return filteredWords;
 }
 
@@ -203,8 +220,12 @@ function getLinks(html) {
 
 function indexLink(link) {
   // this function only gets the words from a link
+  var start = new Date().getTime();
+  var date = new Date();
   axios.get(link)
     .then(response => {
+      var end = new Date().getTime(); 
+      var seconds = ((end - start) / 1000).toFixed(2);
       var $ = cheerio.load(response.data);
       // get words from link
       var words = getWords(response.data)
@@ -213,9 +234,9 @@ function indexLink(link) {
         "title": $("title").text(),
         "url": link,
         "description": $('meta[name="description"]').attr('content'),
-        "lastModified": null, // get last modified
-        "lastIndexed": null, // get the data of last time it was indexed
-        "timeToIndex": null // record the amount of time it took to index
+        "lastModified": $('meta[name="last-modifed"]').attr('content'),, // get last modified
+        "lastIndexed": date, // get the data of last time it was indexed
+        "timeToIndex": seconds // record the amount of time it took to index
       }
     
     
