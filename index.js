@@ -234,7 +234,7 @@ function indexLink(link) {
         "title": $("title").text(),
         "url": link,
         "description": $('meta[name="description"]').attr('content'),
-        "lastModified": $('meta[name="last-modifed"]').attr('content'),, // get last modified
+        "lastModified": $('meta[name="last-modifed"]').attr('content'),// get last modified
         "lastIndexed": date, // get the data of last time it was indexed
         "timeToIndex": seconds // record the amount of time it took to index
       }
