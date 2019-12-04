@@ -90,8 +90,8 @@ function indexMainURL(url) {
   axios.get(url)
     .then(response => {
       var $ = cheerio.load(response.data);
-      
       var words = getWords(response.data)
+      
       getLinks(response.data); 
       // get urls info
       var linkInfo = {
@@ -112,7 +112,9 @@ function indexMainURL(url) {
          //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
       
       saveLink(linkInfo)
-      saveWords(words, linkInfo);
+      
+      saveWords(words, linkInfo)
+        
       // saveWords(words, linkInfo);
       //   mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
       // +linkInfo.description+"', NOW(), NOW(), 12)", 
@@ -142,7 +144,7 @@ function saveWords(wordArray, linkInfo){
          else console.log(" CANT GET PAGE ID FOR SOME REASON");
         //  console.log(wordArray[1]);
         })
-         for(i=0;i<wordArray.length;i++){
+         for(let i=0;i<wordArray.length;i++){
          
            wordId = {};
          mysqlConnection.query("SELECT wordId FROM word WHERE wordName=?" , wordArray[i],
@@ -157,7 +159,7 @@ function saveWords(wordArray, linkInfo){
         //  else {
            console.log("WORD IS NOT IN DB PLEASE ADD: " +wordArray[i])
            mysqlConnection.query(
-             "INSERT INTO word (wordName) VALUES ('"+wordArray[i++]+"')", 
+             "INSERT INTO word (wordName) VALUES ('"+wordArray[i]+"')", 
              function(err, result){
                if(err) {console.log(err);}
                else{
@@ -219,7 +221,7 @@ function indexLink(link) {
     .then(response => {
       var $ = cheerio.load(response.data);
       // get words from link
-      
+      var words = getWords(response.data)
       // get links info
       var linkInfo = {
         "title": $("title").text(),
@@ -232,7 +234,7 @@ function indexLink(link) {
     
     
       saveLink(linkInfo)
-      var words = getWords(response.data).then(saveWords(words,linkInfo));
+      saveWords(words,linkInfo);
       // saveWords(words, linkInfo);
       // saveWords(words);
       //The following is to ignore the apostrophes in words. For example "you're" will be interpreted correctly by sql
