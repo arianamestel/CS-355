@@ -113,7 +113,7 @@ function indexMainURL(url) {
       +linkInfo.description+"', NOW(), NOW(), 12)", 
       function(err, result){
         if(err) console.log(err);
-        console.log("1 record added");
+        console.log("1 link/page record added");
       })
 
        console.log(linkInfo);
@@ -175,9 +175,65 @@ function indexLink(link) {
       +linkInfo.description+"', NOW(), NOW(), 12)", 
       function(err, result){
         if(err) console.log(err);
-        console.log("1 record added");
+        console.log("1 link/page record added");
       })
 
+      //save words to db
+      // CHECK SINGLE APOSTROPHES 
+      var pageId ={};
+      mysqlConnection.query(
+      "SELECT pageId FROM page WHERE url = '"+linkInfo.url+"';",
+      function(err, rows, fields){
+        if(err) console.log(err);
+        var count = rows.length;
+          if(count == 1){
+        pageId= rows[0].pageId;
+        console.log("got PAGEID"+ pageId);
+          }
+          else console.log(" CANT GET PAGE ID FOR SOME REASON")
+        for(var i=0;i<words.length;i++){
+          wordId = {};
+          mysqlConnection.query("SELECT wordId FROM word WHERE wordName='"+words[i]+"');" , 
+          function(err, rows, fields){
+
+          if(err) console.log(err);
+          var count = rows.length;
+          if(count == 1){
+          wordId = rows[0].wordId
+          console.log("GOT WORD ID added" + wordId);
+          }
+          else console.log("WORD IS NOT IN DB PLEASE ADD")
+
+        });
+        }
+      });
+      // console.log(pageId +" THIS IS THE PAGE ID **********")
+      for(var i=0;i<words.length;i++){
+        //get wordid
+        // var wordId = mysqlConnection.query("SELECT wordId FROM word WHERE wordName='"+words[i]+"');" , 
+        // function(err, result){
+        //   if(err) console.log(err);
+        //   console.log("GOT WORD ID added");
+        // });
+        // mysqlConnection.query("IF EXISTS (SELECT * FROM word WHERE wordName='"+words[i]+"')"
+        // +"BEGIN "+
+        // "IF EXISTS (SELECT * FROM page_word WHERE wordId = '"+wordId+"'"+
+        //   "BEGIN "+
+        //     "UPDATE page_word SET freq = freq+1 WHERE wordId = (SELECT wordId FROM word WHERE wordName='"+words[i]+"')"+
+        //       " AND pageId = '"+pageId+"'"+
+        //   "END "+
+        //   "ELSE INSERT INTO page_word (pageId, wordId, freq) VALUES ('"+pageId+"', '"+
+        //     "(SELECT wordId FROM word WHERE wordName= '"+words[i]+"')"
+        // +"END "+
+        // "ELSE "+
+        //   "INSERT INTO word (wordName) VALUES('"+words[i]+"')"
+        //   +" INSERT INTO page_word (pageId, wordId, freq) VALUES ('"+pageId+"', "+
+        //   " (SELECT wordId FROM word WHERE wordName= '"+words[i]+"')", function(err, result){
+        //     if(err) console.log(err);
+        //     console.log("1 link/page record added");
+        //   })
+       // mysqlConnection.query("INSERT INTO word (wordName) VALUES ("+words+")");
+      }
       console.log(linkInfo);
       return linkInfo;
 
