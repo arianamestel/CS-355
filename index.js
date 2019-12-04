@@ -100,14 +100,35 @@ function indexMainURL(url) {
         "lastModified": $('meta[name="last-modifed"]').attr('content'), // get last modified (it in headers somewhere)
         "lastIndexed": null, // get the data of last time it was indexed
         "timeToIndex": null // record the amount of time it took to index
-      };
+      }
       // save urls info and the words associated with it HERE
       // saveToDB(linkInfo, words)
       //save to DB linkINfo
       //The following is to ignore the apostrophes in words. For example "you're" will be interpreted correctly by sql
-      linkInfo.description = linkInfo.description.replace(/'/g,"''");
-      linkInfo.url = linkInfo.url.replace(/'/g,"''");
-      linkInfo.title = linkInfo.title.replace(/'/g,"''");
+      // linkInfo.description = linkInfo.description.replace(/'/g,"''");
+      // linkInfo.url = linkInfo.url.replace(/'/g,"''");
+      // linkInfo.title = linkInfo.title.replace(/'/g,"''");
+         //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
+      saveLink(linkInfo)
+      //   mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
+      // +linkInfo.description+"', NOW(), NOW(), 12)", 
+      // function(err, result){
+      //   if(err) console.log(err);
+      //   console.log("1 link/page record added");
+      // })
+      saveWords(words, linkInfo)
+       console.log(linkInfo);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+
+function saveLink(linkInfo){
+  // linkInfo.description = linkInfo.description.replace(/\/g,"'");
+  //     linkInfo.url = linkInfo.url.replace(/\/g,"'");
+  //     linkInfo.title = linkInfo.title.replace(/\/g,"'");
          //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
       mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
       +linkInfo.description+"', NOW(), NOW(), 12)", 
@@ -115,12 +136,45 @@ function indexMainURL(url) {
         if(err) console.log(err);
         console.log("1 link/page record added");
       })
+}
 
-       console.log(linkInfo);
-    })
-    .catch(error => {
-      console.log(error);
-    });
+function saveWords(wordArray, linkInfo){
+   var pageId ={};
+      mysqlConnection.query(
+      "SELECT pageId FROM page WHERE url = '"+linkInfo.url+"';",
+      function(err, rows, fields){
+        if(err) console.log(err);
+        var count = rows.length;
+          if(count == 1){
+        pageId= rows[0].pageId;
+        console.log("got PAGEID"+ pageId);
+          }
+          else console.log(" CANT GET PAGE ID FOR SOME REASON")
+          for(var i=0;i<wordArray.length;i++){
+          wordId = {};
+          mysqlConnection.query("SELECT wordId FROM word WHERE wordName='"+wordArray[i]+"');" , 
+          function(err, rows){
+
+          if(err) console.log(err);
+          
+          if(rows){
+          wordId = rows.wordId
+          console.log("GOT WORD ID added" + wordId);
+          }
+          else {console.log("WORD IS NOT IN DB PLEASE ADD")
+            mysqlConnection.query(
+              "INSERT INTO word (wordName) VALUES ('"+wordArray[i]+"')",
+              function(err, result){
+                if(err) console.log(err);
+                console.log("1 word record added to word");
+              }
+            )
+          }
+
+        });
+      }
+      });
+
 }
 
 function getWords(html) {
@@ -160,55 +214,57 @@ function indexLink(link) {
         "lastModified": null, // get last modified
         "lastIndexed": null, // get the data of last time it was indexed
         "timeToIndex": null // record the amount of time it took to index
-      };
-      
+      }
+      saveLink(linkInfo)
+      .then(saveWords(words));
       //The following is to ignore the apostrophes in words. For example "you're" will be interpreted correctly by sql
-      linkInfo.description = linkInfo.description.replace(/'/g,"''");
-      linkInfo.url = linkInfo.url.replace(/'/g,"''");
-      linkInfo.title = linkInfo.title.replace(/'/g,"''");
+      // linkInfo.description = linkInfo.description.replace(/'/g,"''");
+      // linkInfo.url = linkInfo.url.replace(/'/g,"''");
+      // linkInfo.title = linkInfo.title.replace(/'/g,"''");
     
       // save the links words and its info HERE
       // saveToDB(linkInfo, words)
       //THIS IS SAVING TO DB H
       //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
-      mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
-      +linkInfo.description+"', NOW(), NOW(), 12)", 
-      function(err, result){
-        if(err) console.log(err);
-        console.log("1 link/page record added");
-      })
+      // mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES ('"+linkInfo.title+"', '"+linkInfo.url+"', '"
+      // +linkInfo.description+"', NOW(), NOW(), 12)", 
+      // function(err, result){
+      //   if(err) console.log(err);
+      //   console.log("1 link/page record added");
+      // })
 
       //save words to db
-      // CHECK SINGLE APOSTROPHES 
-      var pageId ={};
-      mysqlConnection.query(
-      "SELECT pageId FROM page WHERE url = '"+linkInfo.url+"';",
-      function(err, rows, fields){
-        if(err) console.log(err);
-        var count = rows.length;
-          if(count == 1){
-        pageId= rows[0].pageId;
-        console.log("got PAGEID"+ pageId);
-          }
-          else console.log(" CANT GET PAGE ID FOR SOME REASON")
-        for(var i=0;i<words.length;i++){
-          wordId = {};
-          mysqlConnection.query("SELECT wordId FROM word WHERE wordName='"+words[i]+"');" , 
-          function(err, rows, fields){
+      //UNCOMMENT TILL FOR LOOP 
+      //CHECK SINGLE APOSTROPHES 
+      // var pageId ={};
+      // mysqlConnection.query(
+      // "SELECT pageId FROM page WHERE url = '"+linkInfo.url+"';",
+      // function(err, rows, fields){
+      //   if(err) console.log(err);
+      //   var count = rows.length;
+      //     if(count == 1){
+      //   pageId= rows[0].pageId;
+      //   console.log("got PAGEID"+ pageId);
+      //     }
+      //     else console.log(" CANT GET PAGE ID FOR SOME REASON")
+      //   for(var i=0;i<words.length;i++){
+      //     wordId = {};
+      //     mysqlConnection.query("SELECT wordId FROM word WHERE wordName='"+words[i]+"');" , 
+      //     function(err, rows, fields){
 
-          if(err) console.log(err);
-          var count = rows.length;
-          if(count == 1){
-          wordId = rows[0].wordId
-          console.log("GOT WORD ID added" + wordId);
-          }
-          else console.log("WORD IS NOT IN DB PLEASE ADD")
+      //     if(err) console.log(err);
+      //     var count = rows.length;
+      //     if(count == 1){
+      //     wordId = rows[0].wordId
+      //     console.log("GOT WORD ID added" + wordId);
+      //     }
+      //     else console.log("WORD IS NOT IN DB PLEASE ADD")
 
-        });
-        }
-      });
+      //   });
+      //   }
+      // });
       // console.log(pageId +" THIS IS THE PAGE ID **********")
-      for(var i=0;i<words.length;i++){
+      //for(var i=0;i<words.length;i++){
         //get wordid
         // var wordId = mysqlConnection.query("SELECT wordId FROM word WHERE wordName='"+words[i]+"');" , 
         // function(err, result){
@@ -233,7 +289,7 @@ function indexLink(link) {
         //     console.log("1 link/page record added");
         //   })
        // mysqlConnection.query("INSERT INTO word (wordName) VALUES ("+words+")");
-      }
+      //}
       console.log(linkInfo);
       return linkInfo;
 
