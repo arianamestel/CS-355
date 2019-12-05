@@ -119,7 +119,7 @@ function indexMainURL(url) {
         "lastModified": $('meta[name="last-modifed"]').attr('content'), // get last modified (it in headers somewhere)
         "lastIndexed": date, // get the data of last time it was indexed
         "timeToIndex": seconds // record the amount of time it took to index
-      }
+      };
 
          //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
       
@@ -150,36 +150,34 @@ function saveWords(wordArray, linkInfo){
         })
          for(let i=0;i<wordArray.length;i++){
          
-           wordId = {};
-         mysqlConnection.query("SELECT wordId FROM word WHERE wordName=?" , wordArray[i],
-         function(err, rows){
+            wordId = {};
+            mysqlConnection.query("SELECT wordId FROM word WHERE wordName=?" , wordArray[i],
+              function(err, rows){
 
-         if(err) console.log(err);
+                if(err) console.log(err);
          
-        //  if(rows){
-        //  wordId = rows.wordId
-        //  console.log("GOT WORD ID added" + wordId);
-        //  }
-        //  else {
-           console.log("WORD IS NOT IN DB PLEASE ADD: " +wordArray[i])
-           mysqlConnection.query(
-             "INSERT INTO word (wordName) VALUES ('"+wordArray[i]+"')", 
-             function(err, result){
-               if(err) {console.log(err);}
-               else{
-               console.log("1 word record added to word: "+wordArray[i]);
-               }
-             }
-           );
+                //  if(rows){
+                //  wordId = rows.wordId
+                //  console.log("GOT WORD ID added" + wordId);
+                //  }
+                //  else {
+                   // console.log("WORD IS NOT IN DB PLEASE ADD: " +wordArray[i])
+                 mysqlConnection.query(
+                   "INSERT INTO word (wordName) VALUES ('"+wordArray[i]+"')", 
+                   function(err, result){
+                     if(err) {console.log(err);}
+                     else{
+                     console.log("1 word record added to word: "+wordArray[i]);
+                     }
+                   }
+                 );
         //  }
 
-       });
+              });
          }
-         
-     
-     
-
+         console.log("DONE");
 }
+
 function saveLink(linkInfo){
   // linkInfo.description = linkInfo.description.replace(/\/g,"'");
   //     linkInfo.url = linkInfo.url.replace(/\/g,"'");
@@ -189,9 +187,8 @@ function saveLink(linkInfo){
       +linkInfo.description+"\", NOW(), NOW(), 12)", 
       function(err, result){
         if(err) console.log(err);
-        console.log("1 link/page record added")
-        
-      })
+        console.log("1 link/page record added");
+      });
 }
 
 
@@ -210,6 +207,7 @@ function getLinks(html) {
   var a = $("a");
   var links = [];
   $(a).each(function(i, link) {
+    if (i == 10) return false;
     // push the link into the link array and then index that link
     if (validURL($(link).attr('href'))) {
       links.push(indexLink($(link).attr('href')));
