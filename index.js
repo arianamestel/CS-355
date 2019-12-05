@@ -207,12 +207,13 @@ function getLinks(html) {
   var a = $("a");
   var links = [];
   $(a).each(function(i, link) {
-    if (i == 10) return false;
     // push the link into the link array and then index that link
     if (validURL($(link).attr('href'))) {
+      if (links.length == 10) return false;
       links.push(indexLink($(link).attr('href')));
     }
   });
+  console.log(links.length);
   return links;
 }
 
