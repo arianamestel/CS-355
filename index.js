@@ -102,6 +102,139 @@ app.post("/index-url", function (req, res) {
   var links = indexMainURL(url);
 });
 
+function getUrlId(linkInfo, words, callback){
+  mysqlConnection.query("SELECT pageId FROM page WHERE url = '" + linkInfo.url + "';", 
+            function(err, result){
+            if(err) console.log(err);
+            if (result[0].pageId === undefined){
+              console.log("PAGE ID IS UNDEFINED");  
+            }
+            else 
+              callback(words, result[0].pageId);
+            })
+}
+
+function saveWords(wordArray, id) {
+  var pageId = {};
+  // mysqlConnection.query(
+  //   "SELECT pageId FROM page WHERE url = '" + linkInfo.url + "';",
+  //   function (err, rows, fields) {
+  //     if (err) console.log(err);
+  //     var count = rows.length;
+  //     if (count == 1) {
+  //       pageId = rows[0].pageId;
+  //       console.log("got PAGEID" + pageId);
+  //     } else console.log(" CANT GET PAGE ID FOR SOME REASON");
+  //     //  console.log(wordArray[1]);
+  //   })
+  for (let i = 0; i < wordArray.length; i++) {
+
+    wordId = {};
+   
+        
+        //  console.log(wordArray[1]);
+      
+/*
+HOW TO CONSTRUCT IF STATEMENTS (pseudo code):
+
+if word exists in words
+  if words exists in page_word
+    update pageword to freq = freq +1
+  else 
+    insert into page_word  wordID pageId freq =1
+else 
+  insert into word, worf
+  insert into page_word pageID wordId freq = 1
+
+*/
+// mysqlConnection.query(
+//   "SELECT wordId FROM word WHERE wordName = '" + wordArray[i] + "';",
+//   function (err, rows, fields) {
+//     if (err) console.log(err);
+//     wordId = rows[0].wordId;
+//   });
+        mysqlConnection.query("CALL putWordIn('"+wordArray[i]+"', "+id+")"
+  
+          // "BEGIN "+
+          // "DECLARE @countWord INT; "+
+          // "SET @countWord = (SELECT COUNT(*) FROM word WHERE wordName = \""+wordArray[i]+"\"); "+
+          // "IF (@countWord>0) THEN "+
+          // "BEGIN "+
+          //   "DECLARE @wordId INT; "+
+          //   "DECLARE @count_page_word INT; "+
+          //   "SET @wordId = (SELECT wordId FROM word WHERE wordName = \""+wordArray[i]+"\"); "+
+            
+          //   "SET @count_page_word = (SELECT (*) FROM page_word WHERE pageId = "+pageId+" AND wordId = @wordId); "+
+          //   "IF (@count_page_word >0) THEN "+
+          //   "BEGIN "+
+          //     "UPDATE page_word SET freq = freq + 1 WHERE pageId =  "+pageId+" AND wordId = @wordId; "+
+          //   "END "+
+          //   "ELSE "+
+          //   "BEGIN "+
+          //     "INSERT INTO page_word (pageId, wordId, freq) VALUES ("+pageId+", @wordId, 1); "+
+          //   "END "+
+          // "END "+
+          // "ELSE "+
+          // "BEGIN "+
+          // "INSERT INTO word (wordName) VALUES (\""+wordArray[i]+"\") "+
+          // "DECLARE @newWordId INT; "+
+          // "SET @newWordId = (SELECT wordId FROM word WHERE wordName = \""+wordArray[i]+"\"); "+
+          // "INSERT INTO page_word (pageId, wordId, freq) VALUES ("+pageId+", @newWordId, 1); "+
+          // "END "+
+          // "END"
+
+
+
+          // "CASE "+
+          //   "WHEN ((SELECT count(pageId) FROM page_word WHERE pageId = \""+pageId+"\" AND wordId = ?) > 0) "+
+          //       "THEN UPDATE page_word SET freq = freq+1 WHERE pageId =\""+pageId+"\" AND wordId = ? "+
+          //   "WHEN ((SELECT count(wordName) FROM word WHERE wordName = \""+wordArray[i]+"\") >0)"+
+          //     "THEN INSERT INTO page_word (pageId, wordId,  freq) VALUES (\""+pageId+"\" , ? , 1)"+ 
+          //     "ELSE "+
+          // "BEGIN "+
+          //   "INSERT INTO word (wordName) VALUES (\""+wordArray[i]+"\") "+
+          //   "INSERT INTO page_word (pageId, wordId freq) VALUES (\""+pageId+"\", ? , 1)"+
+          // " END"
+
+
+          // "IF (SELECT count(wordName) FROM word WHERE wordName = \""+wordArray[i]+"\" >0)"+
+          // "THEN BEGIN"+
+          //   "IF (SELECT count(pageId) FROM page_word WHERE pageId = \""+pageId+"\" AND wordId = ? > 0)"+//wordId+//figure out later how to get that
+          //   "THEN BEGIN"+
+          //     "UPDATE page_word SET freq = freq+1 WHERE pageId =\""+pageId+"\" AND wordId = ?"+//wordId+//figure out later how to get that
+          //   "END"+
+          //   "ELSE"+
+          //   "BEGIN"+
+          //     "INSERT INTO page_word (pageId, wordId, freq) VALUES (\""+pageId+"\", ? , 1)"+
+          //   "END END IF"+
+          // "END"+
+          // "ELSE"+
+          // "BEGIN"+
+          //   "INSERT INTO word (wordName) VALUES (\""+wordArray[i]+"\")"+
+          //   "INSERT INTO page_word (pageId, wordId, freq) VALUES (\""+pageId+"\", ? , 1)"+
+          // "END END IF"
+          // ,[getWordId(wordArray[i]), getWordId(wordArray[i]), getWordId(wordArray[i]), getWordId(wordArray[i])],
+          ,function (err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log("1 word record added to word: " + wordArray[i]);
+            }
+          }
+        );
+        //  }
+
+      // });
+  }
+
+// mysqlConnection.query("SELECT wordId FROM word WHERE wordName = \""+wordArray[i]+"\"", 
+//             function(err, result){
+//             if(err) console.log(err);
+//             })[0].wordId
+
+
+}
+
 
 function indexMainURL(url) {
   // this function gets all words and all links
@@ -138,10 +271,11 @@ function indexMainURL(url) {
 
       //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
 
-      saveLink(linkInfo)
-
-      saveWords(words, linkInfo)
-
+      saveLink(linkInfo);
+      getUrlId(linkInfo, words, saveWords)
+      // saveWords(words, id)
+      
+      
       console.log(linkInfo);
     })
     .catch(error => {
@@ -149,114 +283,17 @@ function indexMainURL(url) {
     });
 }
 
-function saveWords(wordArray, linkInfo) {
-  var pageId = {};
-  mysqlConnection.query(
-    "SELECT pageId FROM page WHERE url = '" + linkInfo.url + "';",
-    function (err, rows, fields) {
-      if (err) console.log(err);
-      var count = rows.length;
-      if (count == 1) {
-        pageId = rows[0].pageId;
-        console.log("got PAGEID" + pageId);
-      } else console.log(" CANT GET PAGE ID FOR SOME REASON");
-      //  console.log(wordArray[1]);
-    })
-  for (let i = 0; i < wordArray.length; i++) {
-
-    wordId = {};
-   
-        
-        //  console.log(wordArray[1]);
-      
-/*
-HOW TO CONSTRUCT IF STATEMENTS (pseudo code):
-
-if word exists in words
-  if words exists in page_word
-    update pageword to freq = freq +1
-  else 
-    insert into page_word  wordID pageId freq =1
-else 
-  insert into word, worf
-  insert into page_word pageID wordId freq = 1
-
-*/
-// mysqlConnection.query(
-//   "SELECT wordId FROM word WHERE wordName = '" + wordArray[i] + "';",
-//   function (err, rows, fields) {
-//     if (err) console.log(err);
-//     wordId = rows[0].wordId;
-//   });
-        mysqlConnection.query(
-          "CASE "+
-            "WHEN ((SELECT count(pageId) FROM page_word WHERE pageId = \""+pageId+"\" AND wordId = ?) > 0) "+
-                "THEN UPDATE page_word SET freq = freq+1 WHERE pageId =\""+pageId+"\" AND wordId = ? "+
-            "WHEN ((SELECT count(wordName) FROM word WHERE wordName = \""+wordArray[i]+"\") >0)"+
-              "THEN INSERT INTO page_word (pageId, wordId, freq) VALUES (\""+pageId+"\", ? , 1)"+
-              "ELSE "+
-          "BEGIN "+
-            "INSERT INTO word (wordName) VALUES (\""+wordArray[i]+"\") "+
-            "INSERT INTO page_word (pageId, wordId, freq) VALUES (\""+pageId+"\", ? , 1)"+
-          " END"
-          // "IF (SELECT count(wordName) FROM word WHERE wordName = \""+wordArray[i]+"\" >0)"+
-          // "THEN BEGIN"+
-          //   "IF (SELECT count(pageId) FROM page_word WHERE pageId = \""+pageId+"\" AND wordId = ? > 0)"+//wordId+//figure out later how to get that
-          //   "THEN BEGIN"+
-          //     "UPDATE page_word SET freq = freq+1 WHERE pageId =\""+pageId+"\" AND wordId = ?"+//wordId+//figure out later how to get that
-          //   "END"+
-          //   "ELSE"+
-          //   "BEGIN"+
-          //     "INSERT INTO page_word (pageId, wordId, freq) VALUES (\""+pageId+"\", ? , 1)"+
-          //   "END END IF"+
-          // "END"+
-          // "ELSE"+
-          // "BEGIN"+
-          //   "INSERT INTO word (wordName) VALUES (\""+wordArray[i]+"\")"+
-          //   "INSERT INTO page_word (pageId, wordId, freq) VALUES (\""+pageId+"\", ? , 1)"+
-          // "END END IF"
-          ,[getWordId(wordArray[i]), getWordId(wordArray[i]), getWordId(wordArray[i]), getWordId(wordArray[i])],
-          function (err, result) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log("1 word record added to word: " + wordArray[i]);
-            }
-          }
-        );
-        //  }
-
-      // });
-  }
-
-// mysqlConnection.query("SELECT wordId FROM word WHERE wordName = \""+wordArray[i]+"\"", 
-//             function(err, result){
-//             if(err) console.log(err);
-//             })[0].wordId
 
 
-}
-function getWordId(words){
-    let exists = {}
-  try{ return mysqlConnection.query("IF (SELECT wordId FROM word WHERE wordName = \""+words+"\"", 
-            function(err, result){
-            if(err) console.log(err);
-            })[0].wordId;
-  }
-  catch(err){
-    console.log(" error cant find word porb "+ err)
-    return null;
-  }
-  return null;
-           
 
-}
 
 function saveLink(linkInfo) {
   // linkInfo.description = linkInfo.description.replace(/\/g,"'");
   //     linkInfo.url = linkInfo.url.replace(/\/g,"'");
   //     linkInfo.title = linkInfo.title.replace(/\/g,"'");
   //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
+  if(linkInfo.description.length > 255)
+    linkInfo.description = linkInfo.description.substr(0,254);
   mysqlConnection.query( 
    "INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES (\"" + linkInfo.title + "\", \"" + linkInfo.url + "\", \"" +
     linkInfo.description + "\", NOW(), \""+linkInfo.lastIndexed+"\", \""+linkInfo.timeToIndex+"\") " ,
@@ -322,8 +359,9 @@ function indexLink(link) {
       }
 
 
-      saveLink(linkInfo)
-      saveWords(words, linkInfo);
+      saveLink(linkInfo);
+      getUrlId(linkInfo, words, saveWords)
+      
 
       console.log(linkInfo);
       return linkInfo;
