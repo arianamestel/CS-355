@@ -267,7 +267,7 @@ function indexMainURL(url) {
         "lastIndexed": date,
        // get the data of last time it was indexed
         "timeToIndex": seconds // record the amount of time it took to index
-      }
+      };
 
       //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
 
@@ -283,6 +283,7 @@ function indexMainURL(url) {
     });
 }
 
+<<<<<<< HEAD
 
 
 
@@ -300,6 +301,64 @@ function saveLink(linkInfo) {
     function (err, result) {
       if (err) console.log(err);
       console.log("1 link/page record added")
+=======
+function saveWords(wordArray, linkInfo){
+  var pageId ={};
+     mysqlConnection.query(
+     "SELECT pageId FROM page WHERE url = '"+linkInfo.url+"';",
+     function(err, rows, fields){
+       if(err) console.log(err);
+       var count = rows.length;
+         if(count == 1){
+       pageId= rows[0].pageId;
+       console.log("got PAGEID"+ pageId);
+         }
+         else console.log(" CANT GET PAGE ID FOR SOME REASON");
+        //  console.log(wordArray[1]);
+        })
+         for(let i=0;i<wordArray.length;i++){
+         
+            wordId = {};
+            mysqlConnection.query("SELECT wordId FROM word WHERE wordName=?" , wordArray[i],
+              function(err, rows){
+
+                if(err) console.log(err);
+         
+                //  if(rows){
+                //  wordId = rows.wordId
+                //  console.log("GOT WORD ID added" + wordId);
+                //  }
+                //  else {
+                   // console.log("WORD IS NOT IN DB PLEASE ADD: " +wordArray[i])
+                 mysqlConnection.query(
+                   "INSERT INTO word (wordName) VALUES ('"+wordArray[i]+"')", 
+                   function(err, result){
+                     if(err) {console.log(err);}
+                     else{
+                     console.log("1 word record added to word: "+wordArray[i]);
+                     }
+                   }
+                 );
+        //  }
+
+              });
+         }
+         console.log("DONE");
+}
+
+function saveLink(linkInfo){
+  // linkInfo.description = linkInfo.description.replace(/\/g,"'");
+  //     linkInfo.url = linkInfo.url.replace(/\/g,"'");
+  //     linkInfo.title = linkInfo.title.replace(/\/g,"'");
+         //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
+      mysqlConnection.query("INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES (\""+linkInfo.title+"\", \""+linkInfo.url+"\", \""
+      +linkInfo.description+"\", NOW(), NOW(), 12)", 
+      function(err, result){
+        if(err) console.log(err);
+        console.log("1 link/page record added");
+      });
+}
+>>>>>>> master
 
     })
 }
@@ -322,9 +381,11 @@ function getLinks(html) {
   $(a).each(function (i, link) {
     // push the link into the link array and then index that link
     if (validURL($(link).attr('href'))) {
+      if (links.length == 10) return false;
       links.push(indexLink($(link).attr('href')));
     }
   });
+  console.log(links.length);
   return links;
 }
 

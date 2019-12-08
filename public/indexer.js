@@ -19,18 +19,22 @@ $(document).ready(function() {
 
 function indexUrl(indexInput) {
 	if (validURL(indexInput.value)) {
+		var loader = document.getElementById("loader");
+		loader.classList.remove("invisible");
 		$.post('/index-url', 
 		{
 			"url": indexInput.value
-		},
-		function(data) {
-			//
+		})
+		.then(() => {
+			$("#indexerSuccess").removeClass("invisible");
+			$("#loader").addClass("invisible");
+			$("#indexerInvalid").addClass("invisible");
 		});
-		$("#indexerSuccess").removeClass("invisible");
-		$("#indexerInvalid").addClass("invisible");
+
 	}
 	else {
 		$("#indexerSuccess").addClass("invisible");
+		$("#loader").addClass("invisible");
 		$("#indexerInvalid").removeClass("invisible");
 	}
 }
