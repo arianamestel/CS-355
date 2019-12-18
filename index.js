@@ -143,13 +143,22 @@ app.post("/my-search-engine", function (req, res) {
 });
 
 app.get("/history-stats", function (req, res) {
-  res.render("admin/history-stats");
+  mysqlConnection.query( 
+    "SELECT * FROM search;" ,
+     function (err, result) {
+       if (err) console.log(err);
+       else{
+        res.render("admin/history-stats", {searchHist: result});
+      }
+     });
+  
 });
 
 app.post("/index-url", function (req, res) {
   var url = req.body.url;
   var links = indexMainURL(url);
 });
+
 function insertSearchTerm(term, count, date, time){
   mysqlConnection.query( 
     "INSERT INTO search (terms, count, searchDate, timeToSearch) VALUES (\"" + term + "\", " + count + ", \"" +
@@ -158,21 +167,9 @@ function insertSearchTerm(term, count, date, time){
        if (err) console.log(err);
        console.log("search term added")
  
-     })
+     });
 }
 
-function getFromDb(){
-  mysqlConnection.query( 
-    "SELECT * FROM search;" ,
-     function (err, result) {
-       if (err) console.log(err);
-       else{
-        console.log(result);
-        console.log("search term added")
-        return result;
-      }
-     })
-}
 function getUrlId(linkInfo, words, callback){
   mysqlConnection.query("SELECT pageId FROM page WHERE url = '" + linkInfo.url + "';", 
             function(err, result){
@@ -182,11 +179,11 @@ function getUrlId(linkInfo, words, callback){
               console.log("PAGE ID IS UNDEFINED");  
             }
             else 
-              callback(words, result[0].pageId);
+              saveWords(words, result[0].pageId);
           }catch(e){
                 console.log(e);
               }
-            })
+            });
 }
 
 function saveWords(wordArray, id) {
@@ -293,7 +290,7 @@ else
             if (err) {
               console.log(err);
             } else {
-              console.log("1 word record added to word: " + wordArray[i]);
+              // console.log("1 word record added to word: " + wordArray[i]);
             }
           }
         );
@@ -347,8 +344,7 @@ function indexMainURL(url) {
       //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
 
       saveLink(linkInfo);
-      getUrlId(linkInfo, words, saveWords)
-      // saveWords(words, id)
+      getUrlId(linkInfo, words);
       
       
       console.log(linkInfo);
