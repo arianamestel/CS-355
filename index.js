@@ -130,6 +130,7 @@ app.post("/my-search-engine", function (req, res) {
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
+        getFromDb();
     });
   }
 
