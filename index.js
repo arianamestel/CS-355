@@ -160,7 +160,18 @@ function insertSearchTerm(term, count, date, time){
      })
 }
 
-
+function getFromDb(){
+  mysqlConnection.query( 
+    "SELECT * FROM search;" ,
+     function (err, result) {
+       if (err) console.log(err);
+       else{
+        console.log(result);
+        console.log("search term added")
+        return result;
+      }
+     })
+}
 function getUrlId(linkInfo, words, callback){
   mysqlConnection.query("SELECT pageId FROM page WHERE url = '" + linkInfo.url + "';", 
             function(err, result){
