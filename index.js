@@ -94,6 +94,7 @@ app.post("/my-search-engine", function (req, res) {
         res.send(result);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
+        insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
     });
   }
   else if (caseInsens == "true") {
@@ -105,6 +106,7 @@ app.post("/my-search-engine", function (req, res) {
         res.send(result);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
+        insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
     });
   }
   else if (partialMatch == "true") {
@@ -115,6 +117,7 @@ app.post("/my-search-engine", function (req, res) {
         res.send(result);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
+        insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
     });
   }
   else {
@@ -126,6 +129,7 @@ app.post("/my-search-engine", function (req, res) {
         res.send(result);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
+        insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
     });
   }
 
@@ -145,6 +149,17 @@ app.post("/index-url", function (req, res) {
   var url = req.body.url;
   var links = indexMainURL(url);
 });
+function insertSearchTerm(term, count, date, time){
+  mysqlConnection.query( 
+    "INSERT INTO search (terms, count, searchDate, timeToSearch) VALUES (\"" + term + "\", " + count + ", \"" +
+     date + "\", \""+time+"\") " ,
+     function (err, result) {
+       if (err) console.log(err);
+       console.log("search term added")
+ 
+     })
+}
+
 
 function getUrlId(linkInfo, words, callback){
   mysqlConnection.query("SELECT pageId FROM page WHERE url = '" + linkInfo.url + "';", 
