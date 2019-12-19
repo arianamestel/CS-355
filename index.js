@@ -130,15 +130,8 @@ app.post("/my-search-engine", function (req, res) {
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
-        getFromDb();
     });
   }
-
-
-
-  // function that stores search term, number of search results, time that it tookto search, date searched
-  // saveSearchTerm(searchTerm, numResults, timeToSearch, dateSearched)
-
 
 });
 
@@ -170,7 +163,7 @@ function insertSearchTerm(term, count, date, time){
      });
 }
 
-function getUrlId(linkInfo, words, callback){
+function getUrlId(linkInfo, words){
   mysqlConnection.query("SELECT pageId FROM page WHERE url = '" + linkInfo.url + "';", 
             function(err, result){
             try{
@@ -188,6 +181,7 @@ function getUrlId(linkInfo, words, callback){
 
 function saveWords(wordArray, id) {
   var pageId = {};
+<<<<<<< HEAD
   var wordMap = {};
   wordId = {};
 
@@ -229,6 +223,24 @@ function saveWords(wordArray, id) {
     // }
  });
 
+=======
+
+  for (let i = 0; i < wordArray.length; i++) {
+
+    wordId = {};
+
+        mysqlConnection.query("CALL putWordIn('"+wordArray[i]+"', "+id+")"
+          ,function (err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              // console.log("1 word record added to word: " + wordArray[i]);
+            }
+          }
+        );
+
+  }
+>>>>>>> master
 }
 
 
@@ -283,10 +295,6 @@ function indexMainURL(url) {
 
 
 function saveLink(linkInfo) {
-  // linkInfo.description = linkInfo.description.replace(/\/g,"'");
-  //     linkInfo.url = linkInfo.url.replace(/\/g,"'");
-  //     linkInfo.title = linkInfo.title.replace(/\/g,"'");
-  //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
   if(linkInfo.description.length > 255)
     linkInfo.description = linkInfo.description.substr(0,254);
   mysqlConnection.query( 
@@ -298,7 +306,6 @@ function saveLink(linkInfo) {
 
     })
 }
-// \""+linkInfo.lastModified+"\",
 
 //
 function getWords(html) {
