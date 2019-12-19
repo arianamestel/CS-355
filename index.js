@@ -216,7 +216,7 @@ function saveWords(wordArray, id) {
  wordSet.forEach(element => {
     mysqlConnection.query("CALL putWordIn('"+element+"', "+wordMap[element]+", "+id+")"
       ,function (err, result) {
-        i++;
+        // i++;
         // if (err) {
         //   console.log(err);
         // } else {
@@ -300,7 +300,7 @@ function saveLink(linkInfo) {
 }
 // \""+linkInfo.lastModified+"\",
 
-
+//
 function getWords(html) {
   var $ = cheerio.load(html);
   var words = $('body').text().split(/\s+/);
@@ -317,7 +317,7 @@ function getLinks(html) {
   $(a).each(function (i, link) {
     // push the link into the link array and then index that link
     if (validURL($(link).attr('href'))) {
-      if (links.length == 10) return false;
+      if (links.length == 5) return false;
       links.push(indexLink($(link).attr('href')));
     }
   });
