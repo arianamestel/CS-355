@@ -188,122 +188,46 @@ function getUrlId(linkInfo, words, callback){
 
 function saveWords(wordArray, id) {
   var pageId = {};
-  // mysqlConnection.query(
-  //   "SELECT pageId FROM page WHERE url = '" + linkInfo.url + "';",
-  //   function (err, rows, fields) {
-  //     if (err) console.log(err);
-  //     var count = rows.length;
-  //     if (count == 1) {
-  //       pageId = rows[0].pageId;
-  //       console.log("got PAGEID" + pageId);
-  //     } else console.log(" CANT GET PAGE ID FOR SOME REASON");
-  //     //  console.log(wordArray[1]);
-  //   })
-  for (let i = 0; i < wordArray.length; i++) {
+  var wordMap = {};
+  wordId = {};
 
-    wordId = {};
-   
-        
-        //  console.log(wordArray[1]);
+  wordArray.forEach(element => {
+    if(!(element in wordMap)) {
+      wordMap[element] = 0;
+    }
+    wordMap[element] = wordMap[element] + 1;
+  });
       
-/*
-HOW TO CONSTRUCT IF STATEMENTS (pseudo code):
+  /*
+  HOW TO CONSTRUCT IF STATEMENTS (pseudo code):
 
-if word exists in words
-  if words exists in page_word
-    update pageword to freq = freq +1
+  if word exists in words
+    if words.wordID exists in page_word
+      update pageword to freq = freq +1
+    else 
+      insert into page_word  wordID pageId freq =1
   else 
-    insert into page_word  wordID pageId freq =1
-else 
-  insert into word, worf
-  insert into page_word pageID wordId freq = 1
+    insert into word, worf
+    insert into page_word pageID wordId freq = 1
 
-*/
-// mysqlConnection.query(
-//   "SELECT wordId FROM word WHERE wordName = '" + wordArray[i] + "';",
-//   function (err, rows, fields) {
-//     if (err) console.log(err);
-//     wordId = rows[0].wordId;
-//   });
-        mysqlConnection.query("CALL putWordIn('"+wordArray[i]+"', "+id+")"
-  
-          // "BEGIN "+
-          // "DECLARE @countWord INT; "+
-          // "SET @countWord = (SELECT COUNT(*) FROM word WHERE wordName = \""+wordArray[i]+"\"); "+
-          // "IF (@countWord>0) THEN "+
-          // "BEGIN "+
-          //   "DECLARE @wordId INT; "+
-          //   "DECLARE @count_page_word INT; "+
-          //   "SET @wordId = (SELECT wordId FROM word WHERE wordName = \""+wordArray[i]+"\"); "+
-            
-          //   "SET @count_page_word = (SELECT (*) FROM page_word WHERE pageId = "+pageId+" AND wordId = @wordId); "+
-          //   "IF (@count_page_word >0) THEN "+
-          //   "BEGIN "+
-          //     "UPDATE page_word SET freq = freq + 1 WHERE pageId =  "+pageId+" AND wordId = @wordId; "+
-          //   "END "+
-          //   "ELSE "+
-          //   "BEGIN "+
-          //     "INSERT INTO page_word (pageId, wordId, freq) VALUES ("+pageId+", @wordId, 1); "+
-          //   "END "+
-          // "END "+
-          // "ELSE "+
-          // "BEGIN "+
-          // "INSERT INTO word (wordName) VALUES (\""+wordArray[i]+"\") "+
-          // "DECLARE @newWordId INT; "+
-          // "SET @newWordId = (SELECT wordId FROM word WHERE wordName = \""+wordArray[i]+"\"); "+
-          // "INSERT INTO page_word (pageId, wordId, freq) VALUES ("+pageId+", @newWordId, 1); "+
-          // "END "+
-          // "END"
-
-
-
-          // "CASE "+
-          //   "WHEN ((SELECT count(pageId) FROM page_word WHERE pageId = \""+pageId+"\" AND wordId = ?) > 0) "+
-          //       "THEN UPDATE page_word SET freq = freq+1 WHERE pageId =\""+pageId+"\" AND wordId = ? "+
-          //   "WHEN ((SELECT count(wordName) FROM word WHERE wordName = \""+wordArray[i]+"\") >0)"+
-          //     "THEN INSERT INTO page_word (pageId, wordId,  freq) VALUES (\""+pageId+"\" , ? , 1)"+ 
-          //     "ELSE "+
-          // "BEGIN "+
-          //   "INSERT INTO word (wordName) VALUES (\""+wordArray[i]+"\") "+
-          //   "INSERT INTO page_word (pageId, wordId freq) VALUES (\""+pageId+"\", ? , 1)"+
-          // " END"
-
-
-          // "IF (SELECT count(wordName) FROM word WHERE wordName = \""+wordArray[i]+"\" >0)"+
-          // "THEN BEGIN"+
-          //   "IF (SELECT count(pageId) FROM page_word WHERE pageId = \""+pageId+"\" AND wordId = ? > 0)"+//wordId+//figure out later how to get that
-          //   "THEN BEGIN"+
-          //     "UPDATE page_word SET freq = freq+1 WHERE pageId =\""+pageId+"\" AND wordId = ?"+//wordId+//figure out later how to get that
-          //   "END"+
-          //   "ELSE"+
-          //   "BEGIN"+
-          //     "INSERT INTO page_word (pageId, wordId, freq) VALUES (\""+pageId+"\", ? , 1)"+
-          //   "END END IF"+
-          // "END"+
-          // "ELSE"+
-          // "BEGIN"+
-          //   "INSERT INTO word (wordName) VALUES (\""+wordArray[i]+"\")"+
-          //   "INSERT INTO page_word (pageId, wordId, freq) VALUES (\""+pageId+"\", ? , 1)"+
-          // "END END IF"
-          // ,[getWordId(wordArray[i]), getWordId(wordArray[i]), getWordId(wordArray[i]), getWordId(wordArray[i])],
-          ,function (err, result) {
-            if (err) {
-              console.log(err);
-            } else {
-              // console.log("1 word record added to word: " + wordArray[i]);
-            }
-          }
-        );
-        //  }
-
-      // });
-  }
-
-// mysqlConnection.query("SELECT wordId FROM word WHERE wordName = \""+wordArray[i]+"\"", 
-//             function(err, result){
-//             if(err) console.log(err);
-//             })[0].wordId
-
+  */
+ var wordSet = new Set(wordArray);
+//  var i = 0;
+ wordSet.forEach(element => {
+    mysqlConnection.query("CALL putWordIn('"+element+"', "+wordMap[element]+", "+id+")"
+      ,function (err, result) {
+        i++;
+        // if (err) {
+        //   console.log(err);
+        // } else {
+        //   console.log("1 word record added to word: " + element);
+        // }
+      }
+    );
+    // if(i == wordSet.size - 1) {
+    //   res.send("DONE");
+    // }
+ });
 
 }
 
