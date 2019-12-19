@@ -103,7 +103,7 @@ app.post("/my-search-engine", function (req, res) {
         res.send(filteredResults);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
-        insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
+        insertSearchTerm(searchTerm, filteredResults.length, searchDate, searchTime);
       });
   } else if (caseInsens == "true") {
     console.log("both");
@@ -118,7 +118,7 @@ app.post("/my-search-engine", function (req, res) {
         res.send(filteredResults);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
-        insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
+        insertSearchTerm(searchTerm, filteredResults.length, searchDate, searchTime);
       });
   } else if (partialMatch == "true") {
     mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND word.wordName LIKE '%" + searchTerm + "%' ORDER BY freq desc",
@@ -132,7 +132,7 @@ app.post("/my-search-engine", function (req, res) {
         res.send(filteredResults);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
-        insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
+        insertSearchTerm(searchTerm, filteredResults.length, searchDate, searchTime);
       });
   } else {
     // searches DB for search term
@@ -147,7 +147,7 @@ app.post("/my-search-engine", function (req, res) {
         res.send(filteredResults);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
-        insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
+        insertSearchTerm(searchTerm, filteredResults.length, searchDate, searchTime);
       });
   }
 
