@@ -181,7 +181,6 @@ function getUrlId(linkInfo, words){
 
 function saveWords(wordArray, id) {
   var pageId = {};
-<<<<<<< HEAD
   var wordMap = {};
   wordId = {};
 
@@ -223,24 +222,6 @@ function saveWords(wordArray, id) {
     // }
  });
 
-=======
-
-  for (let i = 0; i < wordArray.length; i++) {
-
-    wordId = {};
-
-        mysqlConnection.query("CALL putWordIn('"+wordArray[i]+"', "+id+")"
-          ,function (err, result) {
-            if (err) {
-              console.log(err);
-            } else {
-              // console.log("1 word record added to word: " + wordArray[i]);
-            }
-          }
-        );
-
-  }
->>>>>>> master
 }
 
 
