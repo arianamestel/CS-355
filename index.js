@@ -10,6 +10,8 @@ var app = express();
 
 var port = process.env.PORT || 8080;
 
+var _res;
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -87,7 +89,7 @@ app.post("/my-search-engine", function (req, res) {
   var start = new Date().getTime();
 
   if (caseInsens == "true" && partialMatch == "true") {
-    mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND Upper(word.wordName) LIKE Upper('%"+ searchTerm +"%') ORDER BY freq desc",
+    mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND Upper(word.wordName) LIKE Upper('%" + searchTerm + "%') ORDER BY freq desc",
       function (err, result) {
         if (err) throw err;
         console.log(result);
@@ -95,11 +97,10 @@ app.post("/my-search-engine", function (req, res) {
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
-    });
-  }
-  else if (caseInsens == "true") {
+      });
+  } else if (caseInsens == "true") {
     console.log("both");
-    mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND Upper(word.wordName) = Upper('"+ searchTerm +"') ORDER BY freq desc",
+    mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND Upper(word.wordName) = Upper('" + searchTerm + "') ORDER BY freq desc",
       function (err, result) {
         if (err) throw err;
         console.log(result);
@@ -107,10 +108,9 @@ app.post("/my-search-engine", function (req, res) {
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
-    });
-  }
-  else if (partialMatch == "true") {
-    mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND word.wordName LIKE '%"+ searchTerm +"%' ORDER BY freq desc",
+      });
+  } else if (partialMatch == "true") {
+    mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND word.wordName LIKE '%" + searchTerm + "%' ORDER BY freq desc",
       function (err, result) {
         if (err) throw err;
         console.log(result);
@@ -118,11 +118,10 @@ app.post("/my-search-engine", function (req, res) {
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
-    });
-  }
-  else {
+      });
+  } else {
     // searches DB for search term
-    mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND word.wordName = '"+ searchTerm +"' ORDER BY freq desc",
+    mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND word.wordName = '" + searchTerm + "' ORDER BY freq desc",
       function (err, result) {
         if (err) throw err;
         console.log(result);
@@ -130,67 +129,81 @@ app.post("/my-search-engine", function (req, res) {
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
-    });
+      });
   }
 
 });
 
 app.get("/history-stats", function (req, res) {
-  mysqlConnection.query( 
-    "SELECT * FROM search;" ,
-     function (err, result) {
-       if (err) console.log(err);
-       else{
-        res.render("admin/history-stats", {searchHist: result});
+  mysqlConnection.query(
+    "SELECT * FROM search;",
+    function (err, result) {
+      if (err) console.log(err);
+      else {
+        res.render("admin/history-stats", {
+          searchHist: result
+        });
       }
-     });
-  
+    });
+
 });
 
 app.post("/index-url", function (req, res) {
+  _res = res;
   var url = req.body.url;
   var links = indexMainURL(url);
 });
 
-function insertSearchTerm(term, count, date, time){
-  mysqlConnection.query( 
+function insertSearchTerm(term, count, date, time) {
+  mysqlConnection.query(
     "INSERT INTO search (terms, count, searchDate, timeToSearch) VALUES (\"" + term + "\", " + count + ", \"" +
-     date + "\", \""+time+"\") " ,
-     function (err, result) {
-       if (err) console.log(err);
-       console.log("search term added")
- 
-     });
+    date + "\", \"" + time + "\") ",
+    function (err, result) {
+      if (err) console.log(err);
+      console.log("search term added")
+
+    });
 }
 
-function getUrlId(linkInfo, words){
-  mysqlConnection.query("SELECT pageId FROM page WHERE url = '" + linkInfo.url + "';", 
-            function(err, result){
-            try{
-            if(err) console.log(err);
-            if (result[0].pageId === undefined){
-              console.log("PAGE ID IS UNDEFINED");  
-            }
-            else 
-              saveWords(words, result[0].pageId);
-          }catch(e){
-                console.log(e);
-              }
-            });
+var selectPageIDQuery = (url) => {
+  return new Promise((resolve,reject)=>{
+      mysqlConnection.query("SELECT pageId FROM page WHERE url = '" + url + "';", (err, result) => {
+          if (err) {
+              reject(err)
+          } else {  
+              resolve(result)
+          }
+      })
+  })
 }
 
-function saveWords(wordArray, id) {
+
+async function getUrlId(linkInfo, words) {
+  try {
+    const result = await selectPageIDQuery(linkInfo.url);
+    console.log(result[0].pageId);
+    if (result[0].pageId === undefined) {
+      console.log("PAGE ID IS UNDEFINED");
+    } else {
+      await saveWords(words, result[0].pageId);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function saveWords(wordArray, id) {
   var pageId = {};
   var wordMap = {};
   wordId = {};
 
   wordArray.forEach(element => {
-    if(!(element in wordMap)) {
+    if (!(element in wordMap)) {
       wordMap[element] = 0;
     }
     wordMap[element] = wordMap[element] + 1;
   });
-      
+
   /*
   HOW TO CONSTRUCT IF STATEMENTS (pseudo code):
 
@@ -204,49 +217,41 @@ function saveWords(wordArray, id) {
     insert into page_word pageID wordId freq = 1
 
   */
- var wordSet = new Set(wordArray);
-//  var i = 0;
- wordSet.forEach(element => {
-    mysqlConnection.query("CALL putWordIn('"+element+"', "+wordMap[element]+", "+id+")"
-      ,function (err, result) {
-        // i++;
-        // if (err) {
-        //   console.log(err);
-        // } else {
-        //   console.log("1 word record added to word: " + element);
-        // }
-      }
-    );
-    // if(i == wordSet.size - 1) {
-    //   res.send("DONE");
-    // }
- });
+  var wordSet = new Set(wordArray);
+  wordArray = Array.from(wordSet);
+  var i = 0;
+  for (let i = 0; i < wordArray.length; i++) {
+    var element = wordArray[i];
+    let clean = (element.replace(/\W/g, '')).substr(0, 254);
 
+    await mysqlConnection.query("CALL putWordIn('" + clean + "', " + wordMap[element] + ", " + id + ")");
+    console.log(i + "/" + wordSet.size);
+    i++;
+  };
 }
 
 
-function indexMainURL(url) {
+async function indexMainURL(url) {
   // this function gets all words and all links
 
-
   var start = new Date().getTime();
-  
+
   axios.get(url)
-    .then(response => {
+    .then(async response => {
       var $ = cheerio.load(response.data);
       var words = getWords(response.data);
-      getLinks(response.data);
+      await getLinks(response.data);
       var end = new Date().getTime();
       var seconds = ((end - start) / 1000).toFixed(2);
-      
+
       var date;
       date = new Date()
       date = date.getUTCFullYear() + '-' +
-      ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-      ('00' + date.getUTCDate()).slice(-2) + ' ' + 
-      ('00' + date.getUTCHours()).slice(-2) + ':' + 
-      ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
-      ('00' + date.getUTCSeconds()).slice(-2);
+        ('00' + (date.getUTCMonth() + 1)).slice(-2) + '-' +
+        ('00' + date.getUTCDate()).slice(-2) + ' ' +
+        ('00' + date.getUTCHours()).slice(-2) + ':' +
+        ('00' + date.getUTCMinutes()).slice(-2) + ':' +
+        ('00' + date.getUTCSeconds()).slice(-2);
       // get urls info
       var linkInfo = {
         "title": $("title").text(),
@@ -254,37 +259,31 @@ function indexMainURL(url) {
         "description": $('meta[name="description"]').attr('content'),
         "lastModified": $('meta[name="last-modifed"]').attr('content'), // get last modified (it in headers somewhere)
         "lastIndexed": date,
-       // get the data of last time it was indexed
+        // get the data of last time it was indexed
         "timeToIndex": seconds // record the amount of time it took to index
       };
 
       //TODO fix the datetimes from NOW() to actual datetimes, also need to fix time to index,
 
-      saveLink(linkInfo);
-      getUrlId(linkInfo, words);
-      
-      
-      console.log(linkInfo);
+      await saveLink(linkInfo);
+      await getUrlId(linkInfo, words);
+      console.log("************\n\n\n\n\n***************");
+      _res.send("DONE");
     })
     .catch(error => {
       console.log(error);
     });
 }
 
-
-
-
-
-function saveLink(linkInfo) {
-  if(linkInfo.description.length > 255)
-    linkInfo.description = linkInfo.description.substr(0,254);
-  mysqlConnection.query( 
-   "INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES (\"" + linkInfo.title + "\", \"" + linkInfo.url + "\", \"" +
-    linkInfo.description + "\", NOW(), \""+linkInfo.lastIndexed+"\", \""+linkInfo.timeToIndex+"\") " ,
+async function saveLink(linkInfo) {
+  if (linkInfo.description.length > 255)
+    linkInfo.description = linkInfo.description.substr(0, 254);
+  await mysqlConnection.query(
+    "INSERT INTO page (title, url, description, lastModified, lastIndexed, timeToIndex) VALUES (\"" + linkInfo.title + "\", \"" + linkInfo.url + "\", \"" +
+    linkInfo.description + "\", NOW(), \"" + linkInfo.lastIndexed + "\", \"" + linkInfo.timeToIndex + "\") ",
     function (err, result) {
       if (err) console.log(err);
       console.log("1 link/page record added")
-
     })
 }
 
@@ -297,36 +296,42 @@ function getWords(html) {
   return filteredWords;
 }
 
-function getLinks(html) {
+async function getLinks(html) {
   // this function gets links from the url
   var $ = cheerio.load(html);
   var a = $("a");
   var links = [];
-  $(a).each(function (i, link) {
+  console.log("0000\n\n\n\n\n");
+
+  for (let i = 0; i < a.length; i++) {
+    let link = a[i];
     // push the link into the link array and then index that link
     if (validURL($(link).attr('href'))) {
       if (links.length == 5) return false;
-      links.push(indexLink($(link).attr('href')));
+      console.log("1111\n\n");
+      let res = await indexLink($(link).attr('href'));
+      console.log("2222\n\n"); // 2
+      links.push(res);
     }
-  });
-  console.log(links.length);
+  }
+  console.log("3333\n\n\n\n\n"); // 1
   return links;
 }
 
-function indexLink(link) {
+async function indexLink(link) {
   // this function only gets the words from a link
   var start = new Date().getTime();
   var date = new Date();
-  axios.get(link)
-    .then(response => {
+  await axios.get(link)
+    .then(async response => {
       var date;
       date = new Date();
       date = date.getUTCFullYear() + '-' +
-      ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
-      ('00' + date.getUTCDate()).slice(-2) + ' ' + 
-      ('00' + date.getUTCHours()).slice(-2) + ':' + 
-      ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
-      ('00' + date.getUTCSeconds()).slice(-2);
+        ('00' + (date.getUTCMonth() + 1)).slice(-2) + '-' +
+        ('00' + date.getUTCDate()).slice(-2) + ' ' +
+        ('00' + date.getUTCHours()).slice(-2) + ':' +
+        ('00' + date.getUTCMinutes()).slice(-2) + ':' +
+        ('00' + date.getUTCSeconds()).slice(-2);
 
       var end = new Date().getTime();
       var seconds = ((end - start) / 1000).toFixed(2);
@@ -343,16 +348,12 @@ function indexLink(link) {
         "timeToIndex": seconds // record the amount of time it took to index
       }
 
-
-      saveLink(linkInfo);
-      getUrlId(linkInfo, words, saveWords)
-      
+      await saveLink(linkInfo);
+      await getUrlId(linkInfo, words)
 
       console.log(linkInfo);
       return linkInfo;
-
     })
-
     .catch(error => {
       console.log(error);
     });
@@ -384,6 +385,3 @@ mysqlConnection.connect((err) => {
 app.listen(port, function () {
   console.log('Our app is running on http://localhost:' + port);
 });
-
-
-
