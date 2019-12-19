@@ -87,13 +87,20 @@ app.post("/my-search-engine", function (req, res) {
   var partialMatch = req.body.partialMatch;
   var searchDate = new Date();
   var start = new Date().getTime();
+  var filteredResults = [];
+
 
   if (caseInsens == "true" && partialMatch == "true") {
     mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND Upper(word.wordName) LIKE Upper('%" + searchTerm + "%') ORDER BY freq desc",
       function (err, result) {
         if (err) throw err;
-        console.log(result);
-        res.send(result);
+        for (var i = 0; i < result.length; i++) {
+          const index = filteredResults.findIndex((e) => e.pageId === result[i].pageId);
+          if (index === -1) filteredResults.push(result[i]);
+        }
+
+        console.log(filteredResults);
+        res.send(filteredResults);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
@@ -103,8 +110,12 @@ app.post("/my-search-engine", function (req, res) {
     mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND Upper(word.wordName) = Upper('" + searchTerm + "') ORDER BY freq desc",
       function (err, result) {
         if (err) throw err;
-        console.log(result);
-        res.send(result);
+        for (var i = 0; i < result.length; i++) {
+          const index = filteredResults.findIndex((e) => e.pageId === result[i].pageId);
+          if (index === -1) filteredResults.push(result[i]);
+        }
+        console.log(filteredResults);
+        res.send(filteredResults);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
@@ -113,8 +124,12 @@ app.post("/my-search-engine", function (req, res) {
     mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND word.wordName LIKE '%" + searchTerm + "%' ORDER BY freq desc",
       function (err, result) {
         if (err) throw err;
-        console.log(result);
-        res.send(result);
+        for (var i = 0; i < result.length; i++) {
+          const index = filteredResults.findIndex((e) => e.pageId === result[i].pageId);
+          if (index === -1) filteredResults.push(result[i]);
+        }
+        console.log(filteredResults);
+        res.send(filteredResults);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
@@ -124,8 +139,12 @@ app.post("/my-search-engine", function (req, res) {
     mysqlConnection.query("SELECT * FROM page, word, page_word WHERE page.pageId = page_word.pageId AND word.wordId = page_word.wordId AND word.wordName = '" + searchTerm + "' ORDER BY freq desc",
       function (err, result) {
         if (err) throw err;
-        console.log(result);
-        res.send(result);
+        for (var i = 0; i < result.length; i++) {
+          const index = filteredResults.findIndex((e) => e.pageId === result[i].pageId);
+          if (index === -1) filteredResults.push(result[i]);
+        }
+        console.log(filteredResults);
+        res.send(filteredResults);
         var end = new Date().getTime();
         var searchTime = ((end - start) / 1000).toFixed(2);
         insertSearchTerm(searchTerm, result.length, searchDate, searchTime);
