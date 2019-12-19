@@ -24,8 +24,9 @@ function indexUrl(indexInput) {
 		$.post('/index-url', 
 		{
 			"url": indexInput.value
-		})
-		.then(() => {
+		},
+		function(data) {
+			console.log(data);
 			$("#indexerSuccess").removeClass("invisible");
 			$("#loader").addClass("invisible");
 			$("#indexerInvalid").addClass("invisible");
