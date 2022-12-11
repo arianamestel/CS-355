@@ -15,7 +15,7 @@
     "cheerio": "^1.0.0-rc.3",
     "ejs": "^2.7.1",
     "export-to-csv": "^0.2.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "google-search": "0.0.5",
     "google-search-results-nodejs": "^1.3.0",
     "mysql": "^2.17.1",
